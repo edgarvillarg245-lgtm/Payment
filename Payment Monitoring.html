@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GCash Payment Form</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    padding: 20px;
+}
+
+/* PAGE LOADER */
+.page-loader {
+    position: fixed;
+    z-index: 9999;
+    inset: 0;
+    background: #f4f6f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loader-card {
+    background: #ffffff;
+    padding: 28px 24px;
+    border-radius: 16px;
+    text-align: center;
+    width: 90%;
+    max-width: 320px;
+    box-shadow: 0 6px 22px rgba(0,0,0,0.15);
+}
+
+.loader-card p {
+    margin: 12px 0 4px;
+    font-weight: bold;
+    color: #333;
+}
+
+.loader-card small {
+    color: #666;
+    font-size: 13px;
+}
+
+.loader-spinner {
+    width: 42px;
+    height: 42px;
+    border: 5px solid #d6e4ff;
+    border-top: 5px solid #007bff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: auto;
+}
+
+.fade-out {
+    animation: fadeOutLoader 0.35s ease forwards;
+}
+
+@keyframes fadeOutLoader {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+.container {
+    max-width: 500px;
+    margin: auto;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.logo img {
+    width: 150px;
+    max-width: 100%;
+}
+
+h2, h3 {
+    text-align: center;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+}
+
+.required {
+    color: red;
+}
+
+input, select {
+    width: 100%;
+    padding: 9px;
+    margin-top: 5px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 4px rgba(0,123,255,0.35);
+}
+
+.btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    transition: 0.25s ease;
+}
+
+.btn:hover {
+    background: #0056b3;
+    transform: translateY(-1px);
+}
+
+.btn:disabled {
+    background: #8abcf2;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    background: rgba(0,0,0,0.6);
+}
+
+.modal.show {
+    display: block;
+    animation: fadeIn 0.25s ease-in-out;
+}
+
+.modal-content {
+    background: #fff;
+    margin: 5% auto;
+    padding: 22px;
+    width: 90%;
+    max-width: 420px;
+    border-radius: 16px;
+    text-align: center;
+    position: relative;
+    animation: slideUp 0.35s ease;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+}
+
+.close {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 28px;
+    cursor: pointer;
+    color: #555;
+}
+
+.close:hover {
+    color: #000;
+}
+
+.qr-img {
+    width: 250px;
+    max-width: 100%;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: 1px solid #e5e5e5;
+}
+
+.error-message {
+    color: red;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(40px) scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.spinner {
+    width: 36px;
+    height: 36px;
+    border: 4px solid #d6e4ff;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 15px auto;
+    display: none;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.success-box {
+    display: none;
+    text-align: center;
+    padding: 15px 5px;
+}
+
+.success-check {
+    width: 85px;
+    height: 85px;
+    background: #28a745;
+    color: white;
+    border-radius: 50%;
+    font-size: 48px;
+    line-height: 85px;
+    margin: 15px auto;
+    animation: popSuccess 0.45s ease;
+    box-shadow: 0 6px 16px rgba(40,167,69,0.35);
+}
+
+@keyframes popSuccess {
+    0% {
+        transform: scale(0.3);
+        opacity: 0;
+    }
+    70% {
+        transform: scale(1.15);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.success-title {
+    color: #28a745;
+    margin-bottom: 5px;
+}
+
+.success-subtitle {
+    color: #555;
+    font-size: 14px;
+}
+
+.exit-notice {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+    border-radius: 10px;
+    padding: 12px;
+    margin-top: 15px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.receipt {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 15px;
+    text-align: left;
+    font-size: 14px;
+    border: 1px dashed #ccc;
+}
+
+.receipt p {
+    margin: 8px 0;
+}
+
+.receipt-header {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.status-pending {
+    color: #ff9800;
+    font-weight: bold;
+}
+
+.btn-success {
+    background: #28a745;
+}
+
+.btn-success:hover {
+    background: #1e7e34;
+}
+</style>
+</head>
+
+<body>
+
+<div id="pageLoader" class="page-loader">
+    <div class="loader-card">
+        <div class="loader-spinner"></div>
+        <p>Loading payment form...</p>
+        <small>Please wait while images are being prepared.</small>
+    </div>
+</div>
+
+<div class="container" id="mainContainer" style="display:none;">
+    <div class="logo">
+        <img 
+            id="gcashLogo"
+            src="https://dmcihomescom.sharepoint.com/:i:/s/Financing2020YECascade/IQByl8Uc5rCsS6N4ym1OkxkWAWb2inHQ1S-K0yn9zyyXFhw?download=1"
+            alt="GCash Logo"
+        >
+    </div>
+
+    <h2>Payment Form</h2>
+
+    <form id="paymentForm">
+
+        <label>Email <span class="required">*</span></label>
+        <input type="email" id="email" placeholder="Enter your email address">
+
+        <label>Full Name <span class="required">*</span></label>
+        <input type="text" id="fullName" placeholder="Enter your full name">
+
+        <label>Department <span class="required">*</span></label>
+        <select id="department">
+            <option value="">Select Department</option>
+            <option>Construction Division</option>
+            <option>Design & Engineering</option>
+            <option>Property Advisors Unit</option>
+            <option>Sales Group</option>
+            <option>Documents and Inventory Control</option>
+            <option>Quality Management</option>
+            <option>Credit & Collection</option>
+            <option>HRD</option>
+            <option>Accounting</option>
+            <option>Treasury</option>
+            <option>IT</option>
+            <option>Customer Care</option>
+            <option>Project Development</option>
+            <option>Legal & Permits</option>
+            <option>Financing</option>
+            <option>Concept and Landscape Management</option>
+            <option>Marketing</option>
+            <option>Leasing Services</option>
+            <option>Fit Out</option>
+            <option>Purchasing</option>
+            <option>Internal Audit</option>
+            <option>Interior Design</option>
+            <option>General Services</option>
+            <option>Business Development</option>
+            <option>Learning and Development</option>
+            <option>Asset Management Office</option>
+            <option>Executive Office</option>
+            <option>Asset Disposal</option>
+            <option>Compliance Office</option>
+            <option>Hospitality and Leisure Management</option>
+        </select>
+
+        <label>Contact No. <span class="required">*</span></label>
+        <input type="text" id="contactNo" maxlength="13" placeholder="Enter your Contact No.">
+
+        <label>Payment For <span class="required">*</span></label>
+        <select id="payment" onchange="toggleGarageSaleReference()">
+            <option value="">Select Payment</option>
+            <option>EV CHARGING</option>
+            <option>GARAGE SALE</option>
+        </select>
+
+        <div id="garageSaleRefBox" style="display:none;">
+            <label>Order/SOA/Ref No: <span class="required">*</span></label>
+            <input type="text" id="garageSaleReference" placeholder="Enter Order/SOA/Ref No.">
+        </div>
+
+        <label>Mode of Payment</label>
+        <input type="text" id="modeOfPayment" value="GCash" readonly>
+
+        <label>Total Amount Paid <span class="required">*</span></label>
+        <input type="number" id="amount" placeholder="Enter total amount paid">
+
+        <button type="button" class="btn" onclick="continuePayment()">
+            Continue Payment
+        </button>
+
+    </form>
+</div>
+
+
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closePaymentModal()">&times;</span>
+
+        <div id="paymentStep">
+            <h3>Scan to Pay</h3>
+
+            <p style="font-size:14px; color:#555;">
+                Scan the QR code using your GCash app, then enter your GCash reference number below.
+            </p>
+
+            <img 
+                id="gcashQr"
+                src="https://dmcihomescom.sharepoint.com/:i:/s/Financing2020YECascade/IQBmfHnEPwIjTpxhIWfhH45rATXBm4AhnjjqnUhGz45ovSc?e=lvNN7o&amp;download=1"
+                class="qr-img"
+                alt="GCash QR Code"
+            >
+
+            <label>GCash Reference Number <span class="required">*</span></label>
+            <input type="text" id="referenceNumber" placeholder="Enter GCash reference number">
+
+            <button id="submitBtn" class="btn" onclick="submitPayment()">
+                Submit Payment
+            </button>
+
+            <div class="spinner" id="loadingSpinner"></div>
+            <div id="submitError" class="error-message"></div>
+        </div>
+
+        <div id="successStep" class="success-box">
+            <div class="success-check">✓</div>
+
+            <h2 class="success-title">Payment Submitted</h2>
+            <p class="success-subtitle">
+                Your payment has been received and is now pending verification.
+            </p>
+
+            <div class="exit-notice">
+                You may now exit or close this page. Thank you.
+            </div>
+
+            <div class="receipt">
+                <div class="receipt-header">GCash Payment Receipt</div>
+
+                <p><strong>Email:</strong> <span id="receiptEmail"></span></p>
+                <p><strong>Full Name:</strong> <span id="receiptName"></span></p>
+                <p><strong>Department:</strong> <span id="receiptDepartment"></span></p>
+                <p><strong>Contact No.:</strong> <span id="receiptContact"></span></p>
+                <p><strong>Payment For:</strong> <span id="receiptPayment"></span></p>
+
+                <p id="garageSaleReceiptLine" style="display:none;">
+                    <strong>Order/SOA/Ref No:</strong> <span id="receiptGarageSaleRef"></span>
+                </p>
+
+                <p><strong>Mode of Payment:</strong> <span id="receiptMode"></span></p>
+                <p><strong>Total Amount Paid:</strong> ₱<span id="receiptAmount"></span></p>
+                <p><strong>GCash Reference No.:</strong> <span id="receiptRef"></span></p>
+                <p><strong>Date Submitted:</strong> <span id="receiptDate"></span></p>
+                <p><strong>Status:</strong> <span class="status-pending">Pending Verification</span></p>
+            </div>
+
+            <button class="btn btn-success" onclick="finishPayment()">
+                Done / Exit
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+const POWER_AUTOMATE_URL = "https://default849968936d5a4e65a0742175bc9e3f.87.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/cd269fd8a7af4c35870e59ba2dce1b05/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=8Pi-p9nVKf6JLqPAPN4zH6NlYzjS4-qiTRFCHbkaQLk";
+
+/* FAST LOADING SCREEN */
+document.addEventListener("DOMContentLoaded", function () {
+    fastStartLoader();
+});
+
+function fastStartLoader() {
+    const loader = document.getElementById("pageLoader");
+    const mainContainer = document.getElementById("mainContainer");
+
+    const images = [
+        document.getElementById("gcashLogo"),
+        document.getElementById("gcashQr")
+    ];
+
+    let loadedCount = 0;
+    let finished = false;
+
+    function showForm() {
+        if (finished) return;
+        finished = true;
+
+        loader.classList.add("fade-out");
+
+        setTimeout(function () {
+            loader.style.display = "none";
+            mainContainer.style.display = "block";
+        }, 350);
+    }
+
+    function imageLoaded() {
+        loadedCount++;
+
+        if (loadedCount === images.length) {
+            showForm();
+        }
+    }
+
+    images.forEach(function (img) {
+        if (!img) {
+            imageLoaded();
+            return;
+        }
+
+        if (img.complete && img.naturalHeight !== 0) {
+            imageLoaded();
+        } else {
+            img.onload = imageLoaded;
+            img.onerror = function () {
+                console.warn("Image failed to load:", img.src);
+                imageLoaded();
+            };
+        }
+    });
+
+    // Maximum loading time only 0.8 second
+    setTimeout(showForm, 800);
+}
+
+
+document.getElementById("contactNo").addEventListener("input", function(e) {
+    let v = e.target.value.replace(/\D/g,"").slice(0,11);
+
+    if(v.length > 7) {
+        v = v.slice(0,4) + " " + v.slice(4,7) + " " + v.slice(7);
+    } else if(v.length > 4) {
+        v = v.slice(0,4) + " " + v.slice(4);
+    }
+
+    e.target.value = v;
+});
+
+
+function toggleGarageSaleReference() {
+    let payment = val("payment");
+    let refBox = document.getElementById("garageSaleRefBox");
+
+    if (payment === "GARAGE SALE") {
+        refBox.style.display = "block";
+    } else {
+        refBox.style.display = "none";
+        document.getElementById("garageSaleReference").value = "";
+    }
+}
+
+
+function continuePayment() {
+    let email = val("email");
+    let fullName = val("fullName");
+    let department = val("department");
+    let contactNo = val("contactNo");
+    let payment = val("payment");
+    let garageSaleReference = val("garageSaleReference");
+    let amount = val("amount");
+
+    if (!email) return alert("Enter Email");
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return alert("Enter a valid email address");
+    }
+
+    if (!fullName) return alert("Enter Full Name");
+    if (!department) return alert("Select Department");
+    if (!contactNo) return alert("Enter Contact Number");
+    if (!payment) return alert("Select Payment For");
+
+    if (payment === "GARAGE SALE" && !garageSaleReference) {
+        return alert("Enter Order/SOA/Ref No.");
+    }
+
+    if (!amount) return alert("Enter Total Amount Paid");
+
+    if (Number(amount) <= 0) {
+        return alert("Total Amount Paid must be greater than 0");
+    }
+
+    if (!/^09\d{9}$/.test(contactNo.replace(/\D/g,""))) {
+        return alert("Invalid contact number. Format should be 0912XXXXXXX");
+    }
+
+    document.getElementById("paymentStep").style.display = "block";
+    document.getElementById("successStep").style.display = "none";
+    document.getElementById("submitError").textContent = "";
+
+    document.getElementById("paymentModal").classList.add("show");
+}
+
+
+async function submitPayment(){
+    let ref = val("referenceNumber");
+
+    if(!ref){
+        alert("Enter GCash reference number");
+        return;
+    }
+
+    let submittedDate = new Date().toLocaleString("en-PH", {
+        year: "numeric",
+        month: "short",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+    });
+
+    let data = {
+        email: val("email"),
+        fullName: val("fullName"),
+        department: val("department"),
+        contactNo: val("contactNo"),
+        paymentFor: val("payment"),
+        orderSoaRefNo: val("garageSaleReference"),
+        modeOfPayment: val("modeOfPayment"),
+        totalAmountPaid: Number(val("amount")),
+        gcashReferenceNumber: ref,
+        status: "Pending",
+        submittedAt: submittedDate
+    };
+
+    let btn = document.getElementById("submitBtn");
+    let spinner = document.getElementById("loadingSpinner");
+    let error = document.getElementById("submitError");
+
+    btn.disabled = true;
+    btn.textContent = "Processing...";
+    spinner.style.display = "block";
+    error.textContent = "";
+
+    try {
+        let res = await fetch(POWER_AUTOMATE_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        if(!res.ok) {
+            throw new Error("Failed to submit payment");
+        }
+
+        document.getElementById("receiptEmail").textContent = data.email;
+        document.getElementById("receiptName").textContent = data.fullName;
+        document.getElementById("receiptDepartment").textContent = data.department;
+        document.getElementById("receiptContact").textContent = data.contactNo;
+        document.getElementById("receiptPayment").textContent = data.paymentFor;
+        document.getElementById("receiptMode").textContent = data.modeOfPayment;
+
+        document.getElementById("receiptAmount").textContent = data.totalAmountPaid.toLocaleString("en-PH", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+        document.getElementById("receiptRef").textContent = data.gcashReferenceNumber;
+        document.getElementById("receiptDate").textContent = data.submittedAt;
+
+        if (data.paymentFor === "GARAGE SALE") {
+            document.getElementById("garageSaleReceiptLine").style.display = "block";
+            document.getElementById("receiptGarageSaleRef").textContent = data.orderSoaRefNo;
+        } else {
+            document.getElementById("garageSaleReceiptLine").style.display = "none";
+            document.getElementById("receiptGarageSaleRef").textContent = "";
+        }
+
+        document.getElementById("paymentStep").style.display = "none";
+        document.getElementById("successStep").style.display = "block";
+
+    } catch(e) {
+        error.textContent = "Submit failed. Please check your connection or try again.";
+    }
+
+    btn.disabled = false;
+    btn.textContent = "Submit Payment";
+    spinner.style.display = "none";
+}
+
+
+function finishPayment(){
+    closePaymentModal();
+
+    document.getElementById("paymentForm").reset();
+    document.getElementById("modeOfPayment").value = "GCash";
+    document.getElementById("referenceNumber").value = "";
+    document.getElementById("garageSaleReference").value = "";
+    document.getElementById("garageSaleRefBox").style.display = "none";
+
+    alert("Payment submitted successfully. You may now close or exit this page.");
+}
+
+
+function val(id){
+    return document.getElementById(id).value.trim();
+}
+
+
+function closePaymentModal(){
+    document.getElementById("paymentModal").classList.remove("show");
+}
+
+
+window.onclick = function(event) {
+    let modal = document.getElementById("paymentModal");
+
+    if (event.target === modal) {
+        closePaymentModal();
+    }
+}
+</script>
+
+</body>
+</html>
+``
